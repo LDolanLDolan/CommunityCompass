@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .main-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .search-section {
+            flex: 2;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .community-dashboard {
+            flex: 1;
+            min-width: 280px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo-container h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo-container p {
+            color: #666;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+        
+        .compass-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            animation: spin 20s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            padding: 15px 20px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .local-toggle {
+            margin: 20px 0;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .local-toggle input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+        
+        .local-toggle label {
+            font-weight: bold;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .local-toggle.active {
+            background: #e8f4f8;
+            border: 2px solid #667eea;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .search-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .widget {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .widget:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .widget strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .dashboard-title {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .nav-links {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online { background: #28a745; }
+        .status-loading { background: #ffc107; animation: pulse 1s infinite; }
+        .status-offline { background: #dc3545; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .tip-highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .community-dashboard {
+                position: relative;
+                top: 0;
+            }
+            
+            .logo-container h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <title>CommunityCompass - Your Local Search Hub</title>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="#" onclick="showAdvancedSearch()">🔍 Advanced</a>
+        <a href="#" onclick="showImageSearch()">🖼️ Images</a>
+    </div>
+
+    <div class="main-container">
+        <!-- Main Search Section -->
+        <div class="search-section">
+            <div class="logo-container">
+                <div class="compass-icon">🧭</div>
+                <h1>CommunityCompass</h1>
+                <p>Search the web, support your community</p>
+            </div>
+
+            <form action="https://google.com/search" id="searchForm" method="GET">
+                <div class="search-container">
+                    <input class="search-input" type="text" name="q" placeholder="What are you looking for today?" id="searchInput" required>
+                    
+                    <div class="local-toggle" id="localToggle">
+                        <input type="checkbox" id="supportLocal" name="supportLocal">
+                        <label for="supportLocal">🏪 Boost Local & Independent Businesses</label>
+                    </div>
+                    
+                    <div class="loading" id="loadingIndicator">
+                        <span class="status-indicator status-loading"></span>
+                        Enhancing search for local results...
+                    </div>
+                    
+                    <div class="button-container">
+                        <button type="submit" class="search-btn">🔍 Community Search</button>
+                        <button type="submit" class="search-btn" name="btnI" value="1">🎲 I'm Feeling Local</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Community Dashboard -->
+        <div class="community-dashboard">
+            <h3 class="dashboard-title">🏘️ Your Community Hub</h3>
+            
+            <div class="widget">
+                <strong>📍 Your Location</strong>
+                <div id="location">
+                    <span class="status-indicator status-loading"></span>
+                    Detecting your location...
+                </div>
+            </div>
+            
+            <div class="widget">
+                <strong>🌤️ Local Weather</strong>
+                <div id="weather">
+                    <span class="status-indicator status-loading"></span>
+                    Loading weather data...
+                </div>
+            </div>
+            
+            <div class="widget">
+                <strong>🕐 Local Time</strong>
+                <div id="localTime">
+                    <span class="status-indicator status-online"></span>
+                    Loading...
+                </div>
+            </div>
+            
+            <div class="widget">
+                <strong>📰 Community Updates</strong>
+                <div id="localNews">
+                    <span class="status-indicator status-loading"></span>
+                    Finding local happenings...
+                </div>
+            </div>
+            
+            <div class="widget">
+                <strong>⭐ Local Business Spotlight</strong>
+                <div id="businessSpotlight">
+                    <span class="status-indicator status-loading"></span>
+                    Discovering local gems...
+                </div>
+            </div>
+            
+            <div class="widget">
+                <strong>💡 Smart Search Tips</strong>
+                <div class="tip-highlight">
+                    <strong>Try these local searches:</strong><br>
+                    • "coffee shop" + Local Boost<br>
+                    • "bookstore independent"<br>
+                    • "farmers market near me"<br>
+                    • "bike repair local"<br>
+                    <em>Local Boost adds "near me local independent" to your searches!</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let userLocation = null;
+        let isLocalBoostActive = false;
+
+        // Update local time every second
+        function updateLocalTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const dateString = now.toLocaleDateString([], {weekday: 'long', month: 'short', day: 'numeric'});
+            document.getElementById('localTime').innerHTML = `
+                <span class="status-indicator status-online"></span>
+                🕐 ${timeString}<br>
+                <small>${dateString}</small>
+            `;
+        }
+        
+        // Start the clock
+        setInterval(updateLocalTime, 1000);
+        updateLocalTime();
+
+        // Get user location
+        function getLocationInfo() {
+            const locationDiv = document.getElementById('location');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude.toFixed(2);
+                        const lon = position.coords.longitude.toFixed(2);
+                        userLocation = {lat: position.coords.latitude, lon: position.coords.longitude};
+                        
+                        locationDiv.innerHTML = `
+                            <span class="status-indicator status-online"></span>
+                            📍 Located successfully<br>
+                            <small>Lat: ${lat}, Lon: ${lon}</small>
+                        `;
+                        
+                        // Get weather and local info
+                        getWeatherInfo();
+                        updateLocalNews();
+                    },
+                    error => {
+                        locationDiv.innerHTML = `
+                            <span class="status-indicator status-offline"></span>
+                            📍 Location access denied<br>
+                            <small>Enable location for better local results</small>
+                        `;
+                        
+                        // Fallback: get approximate location from IP
+                        getLocationFromIP();
+                    }
+                );
+            } else {
+                locationDiv.innerHTML = `
+                    <span class="status-indicator status-offline"></span>
+                    📍 Geolocation not supported<br>
+                    <small>Using IP-based location</small>
+                `;
+                getLocationFromIP();
+            }
+        }
+
+        // Fallback: IP-based location
+        function getLocationFromIP() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('location').innerHTML = `
+                        <span class="status-indicator status-online"></span>
+                        📍 ${data.city}, ${data.region}<br>
+                        <small>Based on IP location</small>
+                    `;
+                    getWeatherInfo(data.city);
+                })
+                .catch(error => {
+                    document.getElementById('location').innerHTML = `
+                        <span class="status-indicator status-offline"></span>
+                        📍 Location unavailable<br>
+                        <small>Showing general results</small>
+                    `;
+                });
+        }
+
+        // Get weather info
+        function getWeatherInfo(city = null) {
+            // For demo purposes - in production you'd use a real weather API
+            const conditions = [
+                '☀️ Sunny and bright',
+                '⛅ Partly cloudy', 
+                '☁️ Overcast',
+                '🌧️ Light rain',
+                '🌦️ Scattered showers',
+                '❄️ Snow expected',
+                '🌫️ Foggy conditions'
+            ];
+            
+            const temps = ['72°F (22°C)', '68°F (20°C)', '75°F (24°C)', '65°F (18°C)', '70°F (21°C)', '62°F (17°C)'];
+            
+            setTimeout(() => {
+                const condition = conditions[Math.floor(Math.random() * conditions.length)];
+                const temp = temps[Math.floor(Math.random() * temps.length)];
+                
+                document.getElementById('weather').innerHTML = `
+                    <span class="status-indicator status-online"></span>
+                    ${condition}<br>
+                    <small>Temperature: ${temp}</small>
+                `;
+            }, 1500);
+        }
+
+        // Update local business spotlight
+        function updateBusinessSpotlight() {
+            const businesses = [
+                '☕ Corner Coffee Roasters<br><small>Family-owned since 1995 • 4.8⭐</small>',
+                '📚 The Book Nook<br><small>Independent bookstore • Local events</small>',
+                '🍕 Mama\'s Pizza Kitchen<br><small>Wood-fired pizza • Community favorite</small>',
+                '🌸 Green Thumb Garden Center<br><small>Locally grown plants • Expert advice</small>',
+                '🎨 Creative Arts Supply<br><small>Supporting local artists • Art classes</small>',
+                '🥖 Artisan Bakery<br><small>Fresh daily bread • No preservatives</small>',
+                '🔧 Mike\'s Bike Repair<br><small>30 years experience • Fair prices</small>',
+                '🧘 Mindful Yoga Studio<br><small>Community classes • All levels welcome</small>'
+            ];
+            
+            setTimeout(() => {
+                const business = businesses[Math.floor(Math.random() * businesses.length)];
+                document.getElementById('businessSpotlight').innerHTML = `
+                    <span class="status-indicator status-online"></span>
+                    ${business}
+                `;
+            }, 2000);
+        }
+
+        // Update local news/community updates
+        function updateLocalNews() {
+            const updates = [
+                '🏛️ City Council meeting tonight 7 PM<br><small>Budget discussion & public input</small>',
+                '🎪 Weekend farmers market downtown<br><small>Saturday 8 AM - 2 PM</small>',
+                '🚧 Main Street construction update<br><small>Lane closures through Friday</small>',
+                '🌳 Community tree planting Saturday<br><small>Volunteers needed - bring gloves!</small>',
+                '📚 Library book drive this week<br><small>Accepting donations daily</small>',
+                '🏃 5K charity run this Sunday<br><small>Register at community center</small>',
+                '🎭 Local theater auditions open<br><small>All ages welcome - no experience needed</small>',
+                '🍂 Fall festival planning meeting<br><small>Thursday 6 PM at town hall</small>'
+            ];
+            
+            setTimeout(() => {
+                const update = updates[Math.floor(Math.random() * updates.length)];
+                document.getElementById('localNews').innerHTML = `
+                    <span class="status-indicator status-online"></span>
+                    ${update}
+                `;
+            }, 2500);
+        }
+
+        // Enhanced search functionality
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            const searchInput = document.getElementById('searchInput');
+            const localBoost = document.getElementById('supportLocal').checked;
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            if (localBoost && searchInput.value.trim()) {
+                e.preventDefault(); // Prevent immediate submission
+                
+                // Show loading
+                loadingIndicator.style.display = 'block';
+                
+                // Add local search terms
+                const originalQuery = searchInput.value.trim();
+                const enhancedQuery = originalQuery + ' near me local independent small business community';
+                
+                // Update the search input
+                searchInput.value = enhancedQuery;
+                
+                // Submit after brief delay to show the enhancement
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                    this.submit();
+                }, 1200);
+            }
+        });
+
+        // Local boost toggle interaction
+        document.getElementById('supportLocal').addEventListener('change', function() {
+            const toggle = document.getElementById('localToggle');
+            isLocalBoostActive = this.checked;
+            
+            if (this.checked) {
+                toggle.classList.add('active');
+                // Store preference
+                localStorage.setItem('localBoostPreference', 'true');
+            } else {
+                toggle.classList.remove('active');
+                localStorage.setItem('localBoostPreference', 'false');
+            }
+        });
+
+        // Advanced search function
+        function showAdvancedSearch() {
+            const query = document.getElementById('searchInput').value;
+            const advancedUrl = `https://www.google.com/advanced_search?q=${encodeURIComponent(query)}`;
+            window.open(advancedUrl, '_blank');
+        }
+
+        // Image search function
+        function showImageSearch() {
+            const query = document.getElementById('searchInput').value;
+            const imageUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
+            window.open(imageUrl, '_blank');
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('load', function() {
+            // Check for saved local boost preference
+            const savedPreference = localStorage.getItem('localBoostPreference');
+            if (savedPreference === 'true') {
+                document.getElementById('supportLocal').checked = true;
+                document.getElementById('localToggle').classList.add('active');
+                isLocalBoostActive = true;
+            }
+            
+            // Start loading all the local information
+            getLocationInfo();
+            updateBusinessSpotlight();
+            
+            // Refresh business spotlight and news periodically
+            setInterval(updateBusinessSpotlight, 45000); // Every 45 seconds
+            setInterval(updateLocalNews, 60000); // Every minute
+            
+            // Focus on search input
+            document.getElementById('searchInput').focus();
+        });
+
+        // Add some keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + L to toggle local boost
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                const localCheckbox = document.getElementById('supportLocal');
+                localCheckbox.checked = !localCheckbox.checked;
+                localCheckbox.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Add search suggestions on focus
+        document.getElementById('searchInput').addEventListener('focus', function() {
+            if (!this.value) {
+                const suggestions = [
+                    'coffee shop near me',
+                    'independent bookstore', 
+                    'local farmers market',
+                    'bike repair shop',
+                    'art supplies store',
+                    'family restaurant'
+                ];
+                const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                this.placeholder = `Try: "${randomSuggestion}"`;
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('blur', function() {
+            this.placeholder = 'What are you looking for today?';
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
